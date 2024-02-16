@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AutorRepository extends JpaRepository<AutorModel, Long> {
-    // Outras consultas personalizadas podem ser adicionadas aqui, se necessário
+
+    AutorModel findByCpf(String cpf);
+
+    AutorModel findByEmail(String email);
+
 }
+
 

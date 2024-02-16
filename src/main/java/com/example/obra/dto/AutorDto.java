@@ -1,37 +1,27 @@
 package com.example.obra.dto;
 
+import lombok.Builder;
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
+
+@Data
+@Builder
 public class AutorDto {
 
     private Long id;
+    private String cpf;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date dataNascimento;
+
+    private String email;
     private String nome;
+    private String paisOrigem;
+    private String sexo;
 
-    // Construtores, getters e setters
+    // Construtores, getters e setters (gerados automaticamente pelo Lombok)
 
-    public AutorDto() {
-        // Construtor padrão
-    }
-
-    public AutorDto(Long id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    // Outros métodos, se necessário
 }
-
-
-

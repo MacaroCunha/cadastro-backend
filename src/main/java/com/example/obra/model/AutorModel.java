@@ -1,9 +1,13 @@
 package com.example.obra.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.Date;
 
 @Entity
 @Table(name = "autor")
+@Data
 public class AutorModel {
 
     @Id
@@ -11,27 +15,21 @@ public class AutorModel {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "cpf", unique = true)
+    private String cpf;
+
+    @Column(name = "data_nascimento", nullable = false)
+    private Date dataNascimento;
+
+    @Column(name = "email", unique = true)
+    private String email;
+
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    // Construtores, getters e setters
+    @Column(name = "pais_origem", nullable = false)
+    private String paisOrigem;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    @Column(name = "sexo")
+    private String sexo;
 }
-
-
-
