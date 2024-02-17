@@ -18,7 +18,7 @@ public class AutorModel {
     @Column(name = "cpf", unique = true)
     private String cpf;
 
-    @Column(name = "data_nascimento", nullable = false)
+    @Column(name = "data_nascimento")
     private Date dataNascimento;
 
     @Column(name = "email", unique = true)
