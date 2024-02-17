@@ -1,19 +1,26 @@
 package com.example.obra.service;
 
+import com.example.obra.converter.AutorConverter;
 import com.example.obra.dto.AutorDto;
+import com.example.obra.dto.ObraDto;
+import com.example.obra.dto.request.AutorRequest;
 import com.example.obra.model.AutorModel;
+import com.example.obra.model.ObraModel;
 import com.example.obra.repository.AutorRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
+@Builder
 public class AutorService {
 
     private final AutorRepository autorRepository;
+
+    private final AutorConverter converter;
 
     public List<AutorDto> getAllAutores() {
         return autorRepository.findAll()
@@ -22,13 +29,13 @@ public class AutorService {
                 .collect(Collectors.toList());
     }
 
-    public AutorDto getAutorById(Long id) {
+    public AutorDto getAutorById(Integer id) {
         return autorRepository.findById(id)
                 .map(this::convertToDTO)
                 .orElse(null);
     }
 
-    public AutorDto updateAutor(Long id, AutorDto autorDto) {
+    public AutorDto updateAutor(Integer id, AutorDto autorDto) {
         return autorRepository.findById(id)
                 .map(existingAutor -> {
                     existingAutor.setNome(autorDto.getNome());
@@ -38,12 +45,17 @@ public class AutorService {
                 .orElse(null);
     }
 
-    public AutorDto createAutor(AutorDto novoAutorDto) {
-        AutorModel novoAutorModel = convertToModel(novoAutorDto);
+    public AutorDto createAutor(AutorRequest novoAutorDto) {
+        AutorModel novoAutorModel = converter.convert(novoAutorDto);
+        assert novoAutorModel != null;
         return convertToDTO(autorRepository.save(novoAutorModel));
     }
 
     private AutorDto convertToDTO(AutorModel autorModel) {
+        List<ObraDto> obrasDto = autorModel.getObras().stream()
+                .map(this::convertObraToDTO)
+                .collect(Collectors.toList());
+
         return AutorDto.builder()
                 .id(autorModel.getId())
                 .cpf(autorModel.getCpf())
@@ -52,14 +64,29 @@ public class AutorService {
                 .paisOrigem(autorModel.getPaisOrigem())
                 .sexo(autorModel.getSexo())
                 .dataNascimento(autorModel.getDataNascimento())
+                .obras(obrasDto)
                 .build();
     }
 
-    private AutorModel convertToModel(AutorDto autorDto) {
-        AutorModel autorModel = new AutorModel();
-        autorModel.setNome(autorDto.getNome());
+    private ObraDto convertObraToDTO(ObraModel obraModel) {
+        return ObraDto.builder()
+                .id(obraModel.getId())
+                .nomeObra(obraModel.getNomeObra())
+                .descObra(obraModel.getDescObra())
+                .dataPub(obraModel.getDataPub())
+                .dataExpo(obraModel.getDataExpo())
+                .build();
+    }
+
+    private ObraModel convertObraToModel(ObraDto obraDto) {
+        ObraModel obraModel = new ObraModel();
+        obraModel.setNomeObra(obraDto.getNomeObra());
+        obraModel.setDescObra(obraDto.getDescObra());
+        obraModel.setDataPub(obraDto.getDataPub());
+        obraModel.setDataExpo(obraDto.getDataExpo());
         // Adicione outros campos conforme necessário
-        return autorModel;
+        return obraModel;
     }
 }
+
 

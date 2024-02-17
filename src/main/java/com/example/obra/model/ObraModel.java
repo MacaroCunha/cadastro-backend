@@ -1,13 +1,16 @@
 package com.example.obra.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.Date;
+
 @Entity
 @Table(name = "obra")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ObraModel {
 
     @Id
@@ -20,14 +23,16 @@ public class ObraModel {
     @Column(name = "desc_obra", nullable = false)
     private String descObra;
 
-    @Column(name = "data_pub", nullable = false)
+    @Column(name = "data_pub")
     private Date dataPub;
 
-    @Column(name = "data_expo", nullable = false)
+    @Column(name = "data_expo")
     private Date dataExpo;
-    public String getDescricaoCompleta() {
-        return nomeObra + ": " + descObra;
-    }
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private AutorModel autor;
 }
+
 
 

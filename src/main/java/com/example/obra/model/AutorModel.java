@@ -1,13 +1,20 @@
 package com.example.obra.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "autor")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "autor")
 public class AutorModel {
 
     @Id
@@ -32,4 +39,8 @@ public class AutorModel {
 
     @Column(name = "sexo")
     private String sexo;
+
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    private List<ObraModel> obras;
 }
+

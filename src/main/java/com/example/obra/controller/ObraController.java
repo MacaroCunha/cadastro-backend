@@ -1,5 +1,6 @@
 package com.example.obra.controller;
 
+import com.example.obra.dto.request.ObraRequest;
 import com.example.obra.model.ObraModel;
 import com.example.obra.service.ObraService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,12 @@ public class ObraController {
         return ResponseEntity.ok(obraService.getAllObras());
     }
 
+    @PostMapping
+    public ResponseEntity<ObraModel> createObra(@RequestBody ObraRequest obraRequest) {
+        ObraModel createdObra = obraService.createObra(obraRequest);
+        return ResponseEntity.ok(createdObra);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ObraModel> getObraById(@PathVariable Long id) {
         return obraService.getObraById(id)
@@ -27,14 +34,9 @@ public class ObraController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<ObraModel> createObra(@RequestBody ObraModel obra) {
-        return ResponseEntity.ok(obraService.createObra(obra));
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity<ObraModel> updateObra(@PathVariable Long id, @RequestBody ObraModel obra) {
-        return ResponseEntity.ok(obraService.updateObra(id, obra));
+    public ResponseEntity<ObraModel> updateObra(@PathVariable Long id, @RequestBody ObraRequest obraRequest) {
+        return ResponseEntity.ok(obraService.updateObra(id, obraRequest));
     }
 
     @DeleteMapping("/{id}")
@@ -43,9 +45,3 @@ public class ObraController {
         return ResponseEntity.noContent().build();
     }
 }
-
-
-
-
-
-

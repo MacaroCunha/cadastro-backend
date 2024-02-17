@@ -1,15 +1,11 @@
-package com.example.obra.dto;
+package com.example.obra.dto.request;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-@Builder
-public class ObraDto {
-
-    private Long id;
+public class ObraRequest {
     private String nomeObra;
     private String descObra;
     private Date dataPub;

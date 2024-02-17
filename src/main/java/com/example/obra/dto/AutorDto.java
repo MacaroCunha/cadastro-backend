@@ -5,6 +5,7 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,7 +22,6 @@ public class AutorDto {
     private String paisOrigem;
     private String sexo;
 
-    // Construtores, getters e setters (gerados automaticamente pelo Lombok)
-
-    // Outros métodos, se necessário
+    private List<ObraDto> obras;
 }
+
