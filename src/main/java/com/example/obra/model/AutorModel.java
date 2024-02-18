@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "autor")
+
 public class AutorModel {
 
     @Id
@@ -40,7 +41,6 @@ public class AutorModel {
     @Column(name = "sexo")
     private String sexo;
 
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
-    private List<ObraModel> obras;
 }
+
 

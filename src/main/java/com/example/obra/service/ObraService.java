@@ -29,7 +29,6 @@ public class ObraService {
                 .descObra(obraRequest.getDescObra())
                 .dataPub(obraRequest.getDataPub())
                 .dataExpo(obraRequest.getDataExpo())
-                // Adicione outros campos conforme necessário
                 .build();
 
         return obraRepository.save(novaObra);
@@ -50,10 +49,9 @@ public class ObraService {
     public void deleteObra(Long id) {
         obraRepository.deleteById(id);
     }
+
+    // Adicione o método para obter uma obra por ID, similar ao método getObraById
+    public ObraModel getObraModelById(Long id) {
+        return obraRepository.findById(id).orElse(null);
+    }
 }
-
-
-
-
-
-

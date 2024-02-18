@@ -17,7 +17,6 @@ public class AutorConverter implements Converter<AutorRequest, AutorModel> {
                     .nome(autorDto.getNome())
                     .paisOrigem(autorDto.getPaisOrigem())
                     .sexo(autorDto.getSexo())
-                    .obras(autorDto.getObras())
                     .build();
     }
 }
