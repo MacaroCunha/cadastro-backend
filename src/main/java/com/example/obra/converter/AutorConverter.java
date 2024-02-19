@@ -10,13 +10,14 @@ public class AutorConverter implements Converter<AutorRequest, AutorModel> {
 
     @Override
     public AutorModel convert(AutorRequest autorDto) {
-            return AutorModel.builder()
-                    .cpf(autorDto.getCpf())
-                    .dataNascimento(autorDto.getDataNascimento())
-                    .email(autorDto.getEmail())
-                    .nome(autorDto.getNome())
-                    .paisOrigem(autorDto.getPaisOrigem())
-                    .sexo(autorDto.getSexo())
-                    .build();
+        return AutorModel.builder()
+                .cpf(autorDto.getCpf())
+                .dataNascimento(autorDto.getDataNascimento())
+                .email(autorDto.getEmail())
+                .nome(autorDto.getNome())
+                .paisOrigem(autorDto.getPaisOrigem())
+                .sexo(autorDto.getSexo())
+                .build();
     }
 }
+

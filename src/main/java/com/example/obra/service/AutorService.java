@@ -2,8 +2,10 @@ package com.example.obra.service;
 
 import com.example.obra.converter.AutorConverter;
 import com.example.obra.dto.AutorDto;
-import com.example.obra.dto.ResponseError;
+import com.example.obra.dto.error.ResponseError;
 import com.example.obra.dto.request.AutorRequest;
+import com.example.obra.exception.ExceptionAutor;
+import com.example.obra.message.AutorMessage;
 import com.example.obra.model.AutorModel;
 import com.example.obra.repository.AutorRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,26 +27,46 @@ public class AutorService {
     private final ObjectMapper objectMapper;
 
     public List<AutorDto> getAllAutores() {
-        return autorRepository.findAll()
+        List<AutorDto> autoresDTO = autorRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+
+        if (autoresDTO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, AutorMessage.AUTORES_NOT_FOUND);
+        }
+
+        return autoresDTO;
     }
 
     public AutorDto getAutorById(Long id) {
         return autorRepository.findById(id)
                 .map(this::convertToDTO)
-                .orElse(null);
+                .orElseThrow(() -> new ExceptionAutor(String.format(AutorMessage.AUTOR_NOT_FOUND, id)));
     }
 
     public AutorDto updateAutor(Long id, AutorDto autorDto) {
         AutorModel existingAutor = autorRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Autor não encontrado com o ID: " + id));
+                .orElseThrow(() -> new ExceptionAutor(String.format(AutorMessage.AUTOR_NOT_FOUND, id)));
 
         updateExistingAutor(existingAutor, autorDto);
 
         AutorModel updatedAutor = autorRepository.save(existingAutor);
         return convertToDTO(updatedAutor);
+    }
+
+    public AutorDto createAutor(AutorRequest novoAutorDto) {
+        try {
+            validateAutorRequest(novoAutorDto);
+            checkDuplicateCpfAndEmail(novoAutorDto.getCpf(), novoAutorDto.getEmail());
+
+            AutorModel novoAutorModel = converter.convert(novoAutorDto);
+            return convertToDTO(autorRepository.save(novoAutorModel));
+        } catch (ExceptionAutor e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, AutorMessage.INTERNAL_SERVER_ERROR, e);
+        }
     }
 
     private void updateExistingAutor(AutorModel existingAutor, AutorDto autorDto) {
@@ -56,19 +78,14 @@ public class AutorService {
         existingAutor.setSexo(autorDto.getSexo());
     }
 
-    public AutorDto createAutor(AutorRequest novoAutorDto) {
-        try {
-            validateAutorRequest(novoAutorDto);
-            checkDuplicateCpfAndEmail(novoAutorDto.getCpf(), novoAutorDto.getEmail());
+    private void checkDuplicateCpfAndEmail(String cpf, String email) {
+        checkAndThrowDuplicate(AutorMessage.DUPLICATE_CPF, autorRepository.existsByCpf(cpf), AutorMessage.CPF_ALREADY_REGISTERED);
+        checkAndThrowDuplicate(AutorMessage.DUPLICATE_EMAIL, autorRepository.existsByEmail(email), AutorMessage.EMAIL_ALREADY_REGISTERED);
+    }
 
-            AutorModel novoAutorModel = converter.convert(novoAutorDto);
-            return convertToDTO(autorRepository.save(novoAutorModel));
-        } catch (ResponseStatusException e) {
-            throw e;
-        } catch (Exception e) {
-            ResponseError responseError = new ResponseError("internal_error", "Erro ao criar autor");
-            String jsonResponse = convertResponseErrorToJson(responseError);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, jsonResponse, e);
+    private void checkAndThrowDuplicate(String campo, boolean isDuplicate, String errorMessage) {
+        if (isDuplicate) {
+            throw new ExceptionAutor(convertResponseErrorToJson(new ResponseError(campo, errorMessage)));
         }
     }
 
@@ -76,29 +93,12 @@ public class AutorService {
         try {
             return objectMapper.writeValueAsString(responseError);
         } catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao converter ResponseError para JSON", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, AutorMessage.INTERNAL_SERVER_ERROR, e);
         }
-    }
-
-    private void checkDuplicateCpfAndEmail(String cpf, String email) {
-        if (autorRepository.existsByCpf(cpf)) {
-            throw createDuplicateError("cpf", "CPF já cadastrado");
-        }
-
-        if (autorRepository.existsByEmail(email)) {
-            throw createDuplicateError("email", "E-mail já cadastrado");
-        }
-    }
-
-    private ResponseStatusException createDuplicateError(String campo, String message) {
-        ResponseError responseError = new ResponseError(campo, message);
-        String jsonResponse = convertResponseErrorToJson(responseError);
-        return new ResponseStatusException(HttpStatus.BAD_REQUEST, jsonResponse);
     }
 
     private void validateAutorRequest(AutorRequest autorRequest) {
-        // Implement validation logic for AutorRequest (e.g., unique email, valid CPF, etc.)
-        // Throw ResponseStatusException with HttpStatus.CONFLICT if validation fails
+        // Adicionar lógica de validação
     }
 
     private AutorDto convertToDTO(AutorModel autorModel) {
@@ -113,6 +113,9 @@ public class AutorService {
                 .build();
     }
 }
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-package com.example.obra.dto;
+package com.example.obra.dto.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

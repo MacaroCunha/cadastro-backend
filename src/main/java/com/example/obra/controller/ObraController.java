@@ -1,6 +1,8 @@
 package com.example.obra.controller;
 
 import com.example.obra.dto.request.ObraRequest;
+import com.example.obra.exception.ExceptionObra;
+import com.example.obra.message.ObraMessage;
 import com.example.obra.model.ObraModel;
 import com.example.obra.service.ObraService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +20,20 @@ public class ObraController {
 
     @GetMapping
     public ResponseEntity<List<ObraModel>> getAllObras() {
-        return ResponseEntity.ok(obraService.getAllObras());
+        List<ObraModel> obras = obraService.getAllObras();
+        return obras.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(obras);
     }
 
     @PostMapping
-    public ResponseEntity<ObraModel> createObra(@RequestBody ObraRequest obraRequest) {
-        ObraModel createdObra = obraService.createObra(obraRequest);
-        return ResponseEntity.ok(createdObra);
+    public ResponseEntity<Object> createObra(@RequestBody ObraRequest obraRequest) {
+        try {
+            ObraModel createdObra = obraService.createObra(obraRequest);
+            return ResponseEntity.ok(createdObra);
+        } catch (ExceptionObra e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ObraMessage.CREATED_OBRA);
+        }
     }
 
     @GetMapping("/{id}")
@@ -35,8 +44,15 @@ public class ObraController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ObraModel> updateObra(@PathVariable Long id, @RequestBody ObraRequest obraRequest) {
-        return ResponseEntity.ok(obraService.updateObra(id, obraRequest));
+    public ResponseEntity<Object> updateObra(@PathVariable Long id, @RequestBody ObraRequest obraRequest) {
+        try {
+            ObraModel updatedObra = obraService.updateObra(id, obraRequest);
+            return ResponseEntity.ok(updatedObra);
+        } catch (ExceptionObra e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ObraMessage.UPDATED_OBRA);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -45,3 +61,5 @@ public class ObraController {
         return ResponseEntity.noContent().build();
     }
 }
+
+
