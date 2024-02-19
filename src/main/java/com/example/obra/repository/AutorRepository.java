@@ -7,10 +7,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AutorRepository extends JpaRepository<AutorModel, Long> {
 
-    AutorModel findByCpf(String cpf);
+    boolean existsByCpf(String cpf);
 
-    AutorModel findByEmail(String email);
-
+    boolean existsByEmail(String email);
 }
+
+
+
+
+
 
 

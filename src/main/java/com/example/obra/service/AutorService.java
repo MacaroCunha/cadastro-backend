@@ -2,16 +2,16 @@ package com.example.obra.service;
 
 import com.example.obra.converter.AutorConverter;
 import com.example.obra.dto.AutorDto;
+import com.example.obra.dto.ResponseError;
 import com.example.obra.dto.request.AutorRequest;
 import com.example.obra.model.AutorModel;
-import com.example.obra.model.ObraModel;
-import com.example.obra.model.ObraAutorModel;
 import com.example.obra.repository.AutorRepository;
-import com.example.obra.repository.ObraRepository;
-import com.example.obra.repository.ObraAutorRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,12 +22,7 @@ public class AutorService {
 
     private final AutorRepository autorRepository;
     private final AutorConverter converter;
-
-    @Autowired
-    private ObraRepository obraRepository;
-
-    @Autowired
-    private ObraAutorRepository obraAutorRepository;
+    private final ObjectMapper objectMapper;
 
     public List<AutorDto> getAllAutores() {
         return autorRepository.findAll()
@@ -43,44 +38,68 @@ public class AutorService {
     }
 
     public AutorDto updateAutor(Long id, AutorDto autorDto) {
-        return autorRepository.findById(id)
-                .map(existingAutor -> {
-                    existingAutor.setNome(autorDto.getNome());
-                    existingAutor.setCpf(autorDto.getCpf());
-                    existingAutor.setDataNascimento(autorDto.getDataNascimento());
-                    existingAutor.setEmail(autorDto.getEmail());
-                    existingAutor.setPaisOrigem(autorDto.getPaisOrigem());
-                    existingAutor.setSexo(autorDto.getSexo());
-                    // Atualize outros campos conforme necessário
-                    return convertToDTO(autorRepository.save(existingAutor));
-                })
-                .orElse(null);
+        AutorModel existingAutor = autorRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Autor não encontrado com o ID: " + id));
+
+        updateExistingAutor(existingAutor, autorDto);
+
+        AutorModel updatedAutor = autorRepository.save(existingAutor);
+        return convertToDTO(updatedAutor);
+    }
+
+    private void updateExistingAutor(AutorModel existingAutor, AutorDto autorDto) {
+        existingAutor.setNome(autorDto.getNome());
+        existingAutor.setCpf(autorDto.getCpf());
+        existingAutor.setDataNascimento(autorDto.getDataNascimento());
+        existingAutor.setEmail(autorDto.getEmail());
+        existingAutor.setPaisOrigem(autorDto.getPaisOrigem());
+        existingAutor.setSexo(autorDto.getSexo());
     }
 
     public AutorDto createAutor(AutorRequest novoAutorDto) {
-        AutorModel novoAutorModel = converter.convert(novoAutorDto);
-        assert novoAutorModel != null;
-        return convertToDTO(autorRepository.save(novoAutorModel));
-    }
+        try {
+            validateAutorRequest(novoAutorDto);
+            checkDuplicateCpfAndEmail(novoAutorDto.getCpf(), novoAutorDto.getEmail());
 
-    public AutorDto associarObraAoAutor(Long idAutor, Long idObra) {
-        AutorModel autor = autorRepository.findById(idAutor).orElse(null);
-        ObraModel obra = obraRepository.findById(idObra).orElse(null);
-
-        if (autor != null && obra != null) {
-            ObraAutorModel obraAutor = new ObraAutorModel();
-            obraAutor.setAutor(autor);
-            obraAutor.setObra(obra);
-            obraAutorRepository.save(obraAutor);
-
-            return convertToDTO(autor);
-        } else {
-            // Trate o caso em que o autor ou obra não foi encontrado
-            throw new IllegalArgumentException("Autor ou obra não encontrados");
+            AutorModel novoAutorModel = converter.convert(novoAutorDto);
+            return convertToDTO(autorRepository.save(novoAutorModel));
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            ResponseError responseError = new ResponseError("internal_error", "Erro ao criar autor");
+            String jsonResponse = convertResponseErrorToJson(responseError);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, jsonResponse, e);
         }
     }
 
-    // Outros métodos relacionados às obras podem ser adicionados conforme necessário
+    private String convertResponseErrorToJson(ResponseError responseError) {
+        try {
+            return objectMapper.writeValueAsString(responseError);
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao converter ResponseError para JSON", e);
+        }
+    }
+
+    private void checkDuplicateCpfAndEmail(String cpf, String email) {
+        if (autorRepository.existsByCpf(cpf)) {
+            throw createDuplicateError("cpf", "CPF já cadastrado");
+        }
+
+        if (autorRepository.existsByEmail(email)) {
+            throw createDuplicateError("email", "E-mail já cadastrado");
+        }
+    }
+
+    private ResponseStatusException createDuplicateError(String campo, String message) {
+        ResponseError responseError = new ResponseError(campo, message);
+        String jsonResponse = convertResponseErrorToJson(responseError);
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, jsonResponse);
+    }
+
+    private void validateAutorRequest(AutorRequest autorRequest) {
+        // Implement validation logic for AutorRequest (e.g., unique email, valid CPF, etc.)
+        // Throw ResponseStatusException with HttpStatus.CONFLICT if validation fails
+    }
 
     private AutorDto convertToDTO(AutorModel autorModel) {
         return AutorDto.builder()
@@ -94,7 +113,6 @@ public class AutorService {
                 .build();
     }
 }
-
 
 
 

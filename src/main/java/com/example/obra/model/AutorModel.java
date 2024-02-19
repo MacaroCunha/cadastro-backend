@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -15,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "autor")
-
 public class AutorModel {
 
     @Id
@@ -40,7 +38,7 @@ public class AutorModel {
 
     @Column(name = "sexo")
     private String sexo;
-
 }
+
 
 
