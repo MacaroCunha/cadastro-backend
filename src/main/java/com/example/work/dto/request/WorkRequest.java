@@ -10,7 +10,10 @@ public class WorkRequest {
     private String workDescription;
     private Date publicationDate;
     private Date exhibitionDate;
+    private AuthorRequest author;
+
+    @Data
+    public static class AuthorRequest {
+        private Long id;
+    }
 }
-
-
-

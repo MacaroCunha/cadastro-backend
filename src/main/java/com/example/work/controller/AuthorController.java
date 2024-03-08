@@ -5,8 +5,9 @@ import com.example.work.dto.error.ResponseMessage;
 import com.example.work.dto.request.AuthorRequest;
 import com.example.work.exception.AuthorException;
 import com.example.work.message.AuthorMessage;
-import com.example.work.model.ConnectAuthorWorkModel;
+import com.example.work.model.connectModel.ConnectAuthorWorkId;
 import com.example.work.service.AuthorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/authors")
+@RequiredArgsConstructor
 public class AuthorController {
 
     @Autowired
@@ -40,14 +42,14 @@ public class AuthorController {
 
     @PostMapping
     public ResponseEntity<Object> createAuthor(@RequestBody AuthorRequest newAuthorRequest) {
-            authorService.createAuthor(newAuthorRequest);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ResponseMessage
-                            .builder()
-                            .message(
-                                    AuthorMessage.CREATED_AUTOR)
-                            .build());
+        authorService.createAuthor(newAuthorRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseMessage
+                        .builder()
+                        .message(AuthorMessage.CREATED_AUTOR)
+                        .build());
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateAuthor(@PathVariable Long id, @RequestBody AuthorDto authorDto) {
         try {
@@ -59,7 +61,7 @@ public class AuthorController {
     }
 
     @PutMapping("/connect-work")
-    public ResponseEntity<Object> connectAuthorWork(@RequestBody ConnectAuthorWorkModel authorDto) {
+    public ResponseEntity<Object> connectAuthorWork(@RequestBody ConnectAuthorWorkId connectAuthorWorkModel) {
         try {
             return ResponseEntity.ok(AuthorMessage.ASSOCIATED_WORK_SUCCESS);
         } catch (Exception e) {
@@ -67,4 +69,3 @@ public class AuthorController {
         }
     }
 }
-

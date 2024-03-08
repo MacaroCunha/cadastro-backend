@@ -13,9 +13,13 @@ public interface AuthorRepository extends JpaRepository<AuthorModel, Long> {
 
     @Query(value = "SELECT * FROM author WHERE author.cpf = :CPF", nativeQuery = true)
     Optional<AuthorModel> existsByCpf(@Param("CPF") String CPF);
+
     @Query(value = "SELECT * FROM author WHERE author.email = :EMAIL", nativeQuery = true)
     Optional<AuthorModel> existsByEmail(@Param("EMAIL") String EMAIL);
+
+    Optional<AuthorModel> findByEmail(String email);
 }
+
 
 
 

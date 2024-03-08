@@ -66,13 +66,11 @@ public class AuthorService {
         if (findCpf.isPresent()) {
             throw new BusinessException(AuthorMessage.DUPLICATE_CPF, AuthorMessage.CPF_ALREADY_REGISTERED);
         }
-
         AuthorModel newAuthorModel = converter.convert(newAuthorDto);
         assert newAuthorModel != null;
         authorRepository.save(newAuthorModel);
         return ResponseMessage.builder().message(AuthorMessage.CREATED_AUTOR).build();
     }
-
     private void updateExistingAuthor(AuthorModel existingAuthor, AuthorDto authorDto) {
         existingAuthor.setName(authorDto.getName());
         existingAuthor.setCpf(authorDto.getCpf());
@@ -82,10 +80,3 @@ public class AuthorService {
         existingAuthor.setGender(authorDto.getGender());
     }
 }
-
-
-
-
-
-
-

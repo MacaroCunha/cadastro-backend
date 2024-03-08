@@ -1,12 +1,9 @@
 package com.example.work.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -38,7 +35,12 @@ public class AuthorModel {
 
     @Column(name = "gender")
     private String gender;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AuthorWorkModel> authorWorks;
 }
+
+
 
 
 

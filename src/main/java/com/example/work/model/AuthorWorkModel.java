@@ -1,5 +1,6 @@
 package com.example.work.model;
 
+import com.example.work.model.connectModel.ConnectAuthorWorkId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,20 +11,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "author_work_connection")
-public class ConnectAuthorWorkModel {
+public class AuthorWorkModel {
 
-    @Id
+    @EmbeddedId
+    private ConnectAuthorWorkId id;
+
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @MapsId("author_Id")
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private AuthorModel author;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "work_id")
+    @MapsId("work_Id")
+    @JoinColumn(name = "work_id", referencedColumnName = "id")
     private WorkModel work;
 }
-
-
 
 
 

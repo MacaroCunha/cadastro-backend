@@ -5,9 +5,9 @@ import com.example.work.dto.error.ResponseError;
 import com.example.work.dto.request.WorkRequest;
 import com.example.work.exception.WorkException;
 import com.example.work.message.WorkMessage;
-import com.example.work.model.WorkModel;
 import com.example.work.service.WorkService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +18,8 @@ import java.util.List;
 @RequestMapping("/works")
 @RequiredArgsConstructor
 public class WorkController {
-
-    private final WorkService workService;
-
+    @Autowired
+    private WorkService workService;
     @GetMapping
     public ResponseEntity<List<WorkDto>> getAllWorks() {
         List<WorkDto> works = workService.getAllWorks();
@@ -52,9 +51,9 @@ public class WorkController {
             WorkDto updatedWork = workService.updateWork(id, workRequest);
             return ResponseEntity.ok(updatedWork);
         } catch (WorkException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new ResponseError("", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(WorkMessage.UPDATED_WORK);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError("", WorkMessage.UPDATED_WORK));
         }
     }
 
