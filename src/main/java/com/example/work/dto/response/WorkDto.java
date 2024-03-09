@@ -1,4 +1,4 @@
-package com.example.work.dto;
+package com.example.work.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +15,8 @@ public class WorkDto {
     private Date publicationDate;
     private Date exhibitionDate;
 }
+
+
 
 
 

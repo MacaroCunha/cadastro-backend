@@ -1,6 +1,6 @@
 package com.example.work.controller;
 
-import com.example.work.dto.WorkDto;
+import com.example.work.dto.response.WorkDto;
 import com.example.work.dto.error.ResponseError;
 import com.example.work.dto.request.WorkRequest;
 import com.example.work.exception.WorkException;

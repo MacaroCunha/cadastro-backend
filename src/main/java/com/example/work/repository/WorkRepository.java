@@ -10,10 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface WorkRepository extends JpaRepository<WorkModel, Long> {
-
-    @Query("SELECT w.author FROM WorkModel w WHERE w.author.id = :authorId")
-    Optional<AuthorModel> findAuthorById(@Param("authorId") Long authorId);
-}
+public interface WorkRepository extends JpaRepository<WorkModel, Long> {}
 
 

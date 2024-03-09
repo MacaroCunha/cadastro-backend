@@ -1,14 +1,20 @@
 package com.example.work.service;
 
 import com.example.work.converter.AuthorConverter;
-import com.example.work.dto.AuthorDto;
+import com.example.work.converter.WorkConverter;
+import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.error.ResponseMessage;
 import com.example.work.dto.request.AuthorRequest;
+import com.example.work.dto.response.ListWorkAuthorDto;
+import com.example.work.dto.response.WorkDto;
 import com.example.work.exception.AuthorException;
 import com.example.work.exception.BusinessException;
 import com.example.work.message.AuthorMessage;
 import com.example.work.model.AuthorModel;
+import com.example.work.model.AuthorWorkModel;
+import com.example.work.model.WorkModel;
 import com.example.work.repository.AuthorRepository;
+import com.example.work.repository.AuthorWorkRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +30,7 @@ import java.util.stream.Collectors;
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
+    private final AuthorWorkRepository authorWorkRepository;
     private final AuthorConverter converter;
 
     public List<AuthorDto> getAllAuthors() {
@@ -56,7 +63,7 @@ public class AuthorService {
     }
 
     @Transactional
-    public ResponseMessage createAuthor(AuthorRequest newAuthorDto) {
+    public void createAuthor(AuthorRequest newAuthorDto) {
         Optional<AuthorModel> findCpf = this.authorRepository.existsByCpf(newAuthorDto.getCpf());
         Optional<AuthorModel> findEmail = this.authorRepository.existsByEmail(newAuthorDto.getEmail());
 
@@ -69,8 +76,9 @@ public class AuthorService {
         AuthorModel newAuthorModel = converter.convert(newAuthorDto);
         assert newAuthorModel != null;
         authorRepository.save(newAuthorModel);
-        return ResponseMessage.builder().message(AuthorMessage.CREATED_AUTOR).build();
+        ResponseMessage.builder().message(AuthorMessage.CREATED_AUTOR).build();
     }
+
     private void updateExistingAuthor(AuthorModel existingAuthor, AuthorDto authorDto) {
         existingAuthor.setName(authorDto.getName());
         existingAuthor.setCpf(authorDto.getCpf());
@@ -78,5 +86,18 @@ public class AuthorService {
         existingAuthor.setEmail(authorDto.getEmail());
         existingAuthor.setCountryOfOrigin(authorDto.getCountryOfOrigin());
         existingAuthor.setGender(authorDto.getGender());
+    }
+
+    public ListWorkAuthorDto getAuthorWorks(Long authorId) {
+        AuthorModel author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, authorId)));
+
+        List<AuthorWorkModel> authorWorks = authorWorkRepository.findAuthorAndWorksById(authorId);
+
+        List<WorkDto> workDtos = authorWorks.stream()
+                .map(authorWorkModel -> WorkConverter.toDto(authorWorkModel.getWork()))
+                .collect(Collectors.toList());
+
+        return new ListWorkAuthorDto(author.getId(), author.getName(), workDtos);
     }
 }

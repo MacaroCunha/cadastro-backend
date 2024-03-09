@@ -35,9 +35,6 @@ public class AuthorModel {
 
     @Column(name = "gender")
     private String gender;
-
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AuthorWorkModel> authorWorks;
 }
 
 

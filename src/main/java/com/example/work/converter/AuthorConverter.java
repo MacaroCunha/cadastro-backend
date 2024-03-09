@@ -1,6 +1,6 @@
 package com.example.work.converter;
 
-import com.example.work.dto.AuthorDto;
+import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.request.AuthorRequest;
 import com.example.work.model.AuthorModel;
 import org.springframework.core.convert.converter.Converter;

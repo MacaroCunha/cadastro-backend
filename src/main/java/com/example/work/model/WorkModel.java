@@ -12,33 +12,28 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class WorkModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "id", nullable = false)
+        private Long id;
 
-    @Column(name = "nome_obra", nullable = false)
-    private String workName;
+        @Column(name = "workName", nullable = false)
+        private String workName;
 
-    @Column(name = "desc_obra", nullable = false)
-    private String workDescription;
+        @Column(name = "workDescription", nullable = false)
+        private String workDescription;
 
-    @Column(name = "data_pub")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date publicationDate;
+        @Column(name = "publicationDate")
+        @Temporal(TemporalType.TIMESTAMP)
+        private Date publicationDate;
 
-    @Column(name = "data_expo")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date exhibitionDate;
+        @Column(name = "exhibitionDate")
+        @Temporal(TemporalType.TIMESTAMP)
+        private Date exhibitionDate;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
-    private AuthorModel author;
-
-    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AuthorWorkModel> workAuthors;
 }
+
 
 

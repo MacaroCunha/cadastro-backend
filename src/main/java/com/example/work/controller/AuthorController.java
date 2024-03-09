@@ -1,11 +1,12 @@
 package com.example.work.controller;
 
-import com.example.work.dto.AuthorDto;
+import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.error.ResponseMessage;
 import com.example.work.dto.request.AuthorRequest;
+import com.example.work.dto.response.ListWorkAuthorDto;
 import com.example.work.exception.AuthorException;
 import com.example.work.message.AuthorMessage;
-import com.example.work.model.connectModel.ConnectAuthorWorkId;
+import com.example.work.model.AuthorWorkModel;
 import com.example.work.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,16 @@ public class AuthorController {
         }
     }
 
+    @GetMapping("/{authorId}/works")
+    public ResponseEntity<ListWorkAuthorDto> getAuthorWorks(@PathVariable Long authorId) {
+        try {
+            ListWorkAuthorDto authorWorks = authorService.getAuthorWorks(authorId);
+            return ResponseEntity.ok(authorWorks);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Object> createAuthor(@RequestBody AuthorRequest newAuthorRequest) {
         authorService.createAuthor(newAuthorRequest);
@@ -61,7 +72,7 @@ public class AuthorController {
     }
 
     @PutMapping("/connect-work")
-    public ResponseEntity<Object> connectAuthorWork(@RequestBody ConnectAuthorWorkId connectAuthorWorkModel) {
+    public ResponseEntity<Object> connectAuthorWork(@RequestBody AuthorWorkModel authorWorkModel) {
         try {
             return ResponseEntity.ok(AuthorMessage.ASSOCIATED_WORK_SUCCESS);
         } catch (Exception e) {

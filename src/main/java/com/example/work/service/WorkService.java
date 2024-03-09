@@ -1,7 +1,8 @@
 package com.example.work.service;
 
 import com.example.work.converter.WorkConverter;
-import com.example.work.dto.WorkDto;
+import com.example.work.converter.WorkPostConverter;
+import com.example.work.dto.response.WorkDto;
 import com.example.work.dto.request.WorkRequest;
 import com.example.work.exception.WorkException;
 import com.example.work.message.WorkMessage;
@@ -25,6 +26,8 @@ public class WorkService {
 
     @Autowired
     private final WorkRepository workRepository;
+    @Autowired
+    private WorkPostConverter workPostConverter;
 
     public List<WorkDto> getAllWorks() {
         List<WorkModel> works = workRepository.findAll();
@@ -41,7 +44,8 @@ public class WorkService {
     public WorkDto createWork(WorkRequest workRequest) {
         try {
             validateWorkRequest(workRequest);
-            WorkModel newWork = WorkConverter.toEntity(workRequest);
+            WorkModel newWork = workPostConverter.convert(workRequest);
+            assert newWork != null;
             WorkModel savedWork = workRepository.save(newWork);
             logger.info("Work created successfully. ID: {}", savedWork.getId());
             return WorkConverter.toDto(savedWork);
