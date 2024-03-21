@@ -1,15 +1,14 @@
 package com.example.work.controller;
 
-import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.error.ResponseMessage;
 import com.example.work.dto.request.AuthorRequest;
+import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.response.ListWorkAuthorDto;
 import com.example.work.exception.AuthorException;
 import com.example.work.message.AuthorMessage;
 import com.example.work.model.AuthorWorkModel;
 import com.example.work.service.AuthorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorController {
 
-    @Autowired
-    private AuthorService authorService;
+    private final AuthorService authorService;
 
     @GetMapping
     public ResponseEntity<List<AuthorDto>> getAllAuthors() {

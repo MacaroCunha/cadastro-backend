@@ -19,11 +19,3 @@ public interface AuthorRepository extends JpaRepository<AuthorModel, Long> {
 
     Optional<AuthorModel> findByEmail(String email);
 }
-
-
-
-
-
-
-
-

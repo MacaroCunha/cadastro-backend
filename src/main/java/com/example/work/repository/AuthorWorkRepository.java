@@ -13,14 +13,3 @@ public interface AuthorWorkRepository extends JpaRepository<AuthorWorkModel, Lon
     @Query("SELECT aw FROM AuthorWorkModel aw LEFT JOIN FETCH aw.work w WHERE aw.author.id = :authorId")
     List<AuthorWorkModel> findAuthorAndWorksById(@Param("authorId") Long authorId);
 }
-
-
-
-
-
-
-
-
-
-
-

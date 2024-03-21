@@ -11,5 +11,3 @@ import java.util.Optional;
 
 @Repository
 public interface WorkRepository extends JpaRepository<WorkModel, Long> {}
-
-

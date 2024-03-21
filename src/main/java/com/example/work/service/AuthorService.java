@@ -1,5 +1,4 @@
 package com.example.work.service;
-
 import com.example.work.converter.AuthorConverter;
 import com.example.work.converter.WorkConverter;
 import com.example.work.dto.response.AuthorDto;
@@ -38,20 +37,16 @@ public class AuthorService {
                 .stream()
                 .map(converter::convertToDTO)
                 .collect(Collectors.toList());
-
         if (authorsDTO.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, AuthorMessage.AUTHORS_NOT_FOUND);
         }
-
         return authorsDTO;
     }
-
     public AuthorDto getAuthorById(Long id) {
         return authorRepository.findById(id)
                 .map(converter::convertToDTO)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, id)));
     }
-
     public AuthorDto updateAuthor(Long id, AuthorDto authorDto) {
         AuthorModel existingAuthor = authorRepository.findById(id)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, id)));
@@ -61,7 +56,6 @@ public class AuthorService {
         AuthorModel updatedAuthor = authorRepository.save(existingAuthor);
         return converter.convertToDTO(updatedAuthor);
     }
-
     @Transactional
     public void createAuthor(AuthorRequest newAuthorDto) {
         Optional<AuthorModel> findCpf = this.authorRepository.existsByCpf(newAuthorDto.getCpf());
@@ -78,7 +72,6 @@ public class AuthorService {
         authorRepository.save(newAuthorModel);
         ResponseMessage.builder().message(AuthorMessage.CREATED_AUTOR).build();
     }
-
     private void updateExistingAuthor(AuthorModel existingAuthor, AuthorDto authorDto) {
         existingAuthor.setName(authorDto.getName());
         existingAuthor.setCpf(authorDto.getCpf());
@@ -87,7 +80,6 @@ public class AuthorService {
         existingAuthor.setCountryOfOrigin(authorDto.getCountryOfOrigin());
         existingAuthor.setGender(authorDto.getGender());
     }
-
     public ListWorkAuthorDto getAuthorWorks(Long authorId) {
         AuthorModel author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, authorId)));

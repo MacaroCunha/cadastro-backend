@@ -21,10 +21,8 @@ public class AuthorConverter implements Converter<AuthorRequest, AuthorModel> {
                 .gender(authorRequest.getGender())
                 .build();
     }
-
     private void validateAuthorRequest(AuthorRequest authorRequest) {
     }
-
     public AuthorDto convertToDTO(AuthorModel authorModel) {
         return AuthorDto.builder()
                 .id(authorModel.getId())
@@ -37,5 +35,3 @@ public class AuthorConverter implements Converter<AuthorRequest, AuthorModel> {
                 .build();
     }
 }
-
-

@@ -17,5 +17,3 @@ public class ListWorkAuthorDto {
     private String authorName;
     private List<WorkDto> works;
 }
-
-
