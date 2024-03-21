@@ -36,8 +36,3 @@ public class AuthorModel {
     @Column(name = "gender")
     private String gender;
 }
-
-
-
-
-

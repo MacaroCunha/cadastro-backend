@@ -9,4 +9,3 @@ public class WorkMessage {
     public static final String DELETED_WORK = "Obra excluída com sucesso.";
     public static final String INTERNAL_SERVER_ERROR = "Erro interno do servidor ao processar a solicitação.";
 }
-

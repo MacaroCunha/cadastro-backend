@@ -16,6 +16,3 @@ public class AuthorMessage {
     public static final String EMAIL_ALREADY_REGISTERED = "E-mail já cadastrado.";
 
 }
-
-
-

@@ -1,29 +1,28 @@
 package com.example.work.controller;
 
-import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.error.ResponseMessage;
 import com.example.work.dto.request.AuthorRequest;
+import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.response.ListWorkAuthorDto;
 import com.example.work.exception.AuthorException;
 import com.example.work.message.AuthorMessage;
 import com.example.work.model.AuthorWorkModel;
 import com.example.work.service.AuthorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/authors")
 @RequiredArgsConstructor
 public class AuthorController {
 
-    @Autowired
-    private AuthorService authorService;
+    private final AuthorService authorService;
 
     @GetMapping
     public ResponseEntity<List<AuthorDto>> getAllAuthors() {
@@ -35,7 +34,11 @@ public class AuthorController {
     public ResponseEntity<AuthorDto> getAuthorById(@PathVariable Long id) {
         try {
             AuthorDto authorDto = authorService.getAuthorById(id);
-            return ResponseEntity.ok(authorDto);
+            if (authorDto != null) {
+                return ResponseEntity.ok(authorDto);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (AuthorException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

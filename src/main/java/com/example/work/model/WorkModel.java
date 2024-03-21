@@ -34,6 +34,3 @@ public class WorkModel {
         private Date exhibitionDate;
 
 }
-
-
-

@@ -6,5 +6,3 @@ public class AuthorException extends RuntimeException {
         super(message);
     }
 }
-
-

@@ -96,5 +96,3 @@ public class WorkService {
         existingWork.setExhibitionDate(workRequest.getExhibitionDate());
     }
 }
-
-
