@@ -53,7 +53,7 @@ public class AuthorController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseMessage
                         .builder()
-                        .message(AuthorMessage.CREATED_AUTOR)
+                        .message(AuthorMessage.CREATED_AUTHOR_SUCCESS)
                         .build());
     }
 

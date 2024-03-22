@@ -20,6 +20,7 @@ import java.util.List;
 public class WorkController {
     @Autowired
     private WorkService workService;
+
     @GetMapping
     public ResponseEntity<List<WorkDto>> getAllWorks() {
         List<WorkDto> works = workService.getAllWorks();
@@ -34,7 +35,7 @@ public class WorkController {
         } catch (WorkException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError("", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError("",WorkMessage.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError("", WorkMessage.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -56,10 +57,9 @@ public class WorkController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseError("", WorkMessage.UPDATED_WORK));
         }
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWork(@PathVariable Long id) {
         workService.deleteWork(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

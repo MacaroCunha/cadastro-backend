@@ -8,4 +8,7 @@ public class WorkMessage {
     public static final String UPDATED_WORK = "Obra atualizada com sucesso.";
     public static final String DELETED_WORK = "Obra excluída com sucesso.";
     public static final String INTERNAL_SERVER_ERROR = "Erro interno do servidor ao processar a solicitação.";
+    public static final String INVALID_WORK_REQUEST = "Requisição de obra inválida.";
+    public static final String INVALID_WORK_NAME = "Nome da obra não pode ser vazio ou nulo.";
 }
+

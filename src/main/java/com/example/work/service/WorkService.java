@@ -2,18 +2,18 @@ package com.example.work.service;
 
 import com.example.work.converter.WorkConverter;
 import com.example.work.converter.WorkPostConverter;
-import com.example.work.dto.response.WorkDto;
 import com.example.work.dto.request.WorkRequest;
+import com.example.work.dto.response.WorkDto;
 import com.example.work.exception.WorkException;
 import com.example.work.message.WorkMessage;
 import com.example.work.model.WorkModel;
 import com.example.work.repository.WorkRepository;
-import jakarta.transaction.Transactional;
+import com.example.work.validations.WorkServiceValidation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +24,14 @@ import java.util.stream.Collectors;
 public class WorkService {
     private final Logger logger = LoggerFactory.getLogger(WorkService.class);
 
-    @Autowired
     private final WorkRepository workRepository;
-    @Autowired
-    private WorkPostConverter workPostConverter;
+    private final WorkPostConverter workPostConverter;
 
     public List<WorkDto> getAllWorks() {
         List<WorkModel> works = workRepository.findAll();
+        if (works.isEmpty()) {
+            throw new WorkException(WorkMessage.WORKS_NOT_FOUND);
+        }
         return works.stream()
                 .map(WorkConverter::toDto)
                 .collect(Collectors.toList());
@@ -43,7 +44,7 @@ public class WorkService {
     @Transactional
     public WorkDto createWork(WorkRequest workRequest) {
         try {
-            validateWorkRequest(workRequest);
+            WorkServiceValidation.validateWorkRequest(workRequest);
             WorkModel newWork = workPostConverter.convert(workRequest);
             assert newWork != null;
             WorkModel savedWork = workRepository.save(newWork);
@@ -57,7 +58,7 @@ public class WorkService {
 
     public WorkDto updateWork(Long id, WorkRequest workRequest) {
         try {
-            validateWorkRequest(workRequest);
+            WorkServiceValidation.validateWorkRequest(workRequest);
             return workRepository.findById(id)
                     .map(existingWork -> {
                         updateEntityFromRequest(existingWork, workRequest);
@@ -76,17 +77,13 @@ public class WorkService {
         workRepository.findById(id).ifPresentOrElse(
                 work -> {
                     workRepository.delete(work);
-                    logger.info("Work deleted successfully. ID: {}", id);
+                    logger.info(WorkMessage.DELETED_WORK);
                 },
                 () -> {
                     logger.error("Work not found for deletion. ID: {}", id);
                     throw new IllegalArgumentException(String.format(WorkMessage.WORK_NOT_FOUND, id));
                 }
         );
-    }
-
-    private void validateWorkRequest(WorkRequest workRequest) {
-        // Implement your validation logic here, if needed.
     }
 
     private void updateEntityFromRequest(WorkModel existingWork, WorkRequest workRequest) {
