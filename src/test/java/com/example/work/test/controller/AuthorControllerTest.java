@@ -1,5 +1,4 @@
 package com.example.work.test.controller;
-
 import com.example.work.dto.response.AuthorDto;
 import com.example.work.exception.AuthorException;
 import com.example.work.controller.AuthorController;
@@ -23,7 +22,6 @@ public class AuthorControllerTest {
     private AuthorService authorService;
     @InjectMocks
     private AuthorController authorController;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -36,7 +34,6 @@ public class AuthorControllerTest {
         ResponseEntity<AuthorDto> responseEntity = authorController.getAuthorById(nonExistingId);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
-
     @Test
     public void testGetAuthorById_NonExistingId_ThrowsResponseStatusException() {
         // Arrange

@@ -41,11 +41,13 @@ public class AuthorService {
         }
         return authorsDTO;
     }
+
     public AuthorDto getAuthorById(Long id) {
         return authorRepository.findById(id)
                 .map(converter::convertToDTO)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, id)));
     }
+
     public AuthorDto updateAuthor(Long id, AuthorDto authorDto) {
         AuthorModel existingAuthor = authorRepository.findById(id)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, id)));
@@ -55,6 +57,7 @@ public class AuthorService {
         AuthorModel updatedAuthor = authorRepository.save(existingAuthor);
         return converter.convertToDTO(updatedAuthor);
     }
+
     @Transactional
     public void createAuthor(AuthorRequest newAuthorDto) {
         Optional<AuthorModel> findCpf = this.authorRepository.existsByCpf(newAuthorDto.getCpf());
@@ -69,8 +72,8 @@ public class AuthorService {
         AuthorModel newAuthorModel = converter.convert(newAuthorDto);
         assert newAuthorModel != null;
         authorRepository.save(newAuthorModel);
-        ResponseMessage.builder().message(AuthorMessage.CREATED_AUTOR).build();
     }
+
     private void updateExistingAuthor(AuthorModel existingAuthor, AuthorDto authorDto) {
         existingAuthor.setName(authorDto.getName());
         existingAuthor.setCpf(authorDto.getCpf());
@@ -79,6 +82,7 @@ public class AuthorService {
         existingAuthor.setCountryOfOrigin(authorDto.getCountryOfOrigin());
         existingAuthor.setGender(authorDto.getGender());
     }
+
     public ListWorkAuthorDto getAuthorWorks(Long authorId) {
         AuthorModel author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, authorId)));
