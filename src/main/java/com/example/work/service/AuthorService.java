@@ -7,19 +7,20 @@ import com.example.work.dto.response.AuthorDto;
 import com.example.work.dto.response.ListWorkAuthorDto;
 import com.example.work.dto.response.WorkDto;
 import com.example.work.exception.AuthorException;
+import com.example.work.exception.BusinessException;
 import com.example.work.message.AuthorMessage;
 import com.example.work.model.AuthorModel;
 import com.example.work.model.AuthorWorkModel;
 import com.example.work.repository.AuthorRepository;
 import com.example.work.repository.AuthorWorkRepository;
-import com.example.work.validations.AuthorServiceValidation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,25 +48,48 @@ public class AuthorService {
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, id)));
     }
 
-    public AuthorDto updateAuthor(Long id, AuthorDto authorDto) {
+    public AuthorDto updateAuthor(Long id, @Validated AuthorDto authorDto) { // Adicione @Valid aqui
         AuthorModel existingAuthor = authorRepository.findById(id)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, id)));
-
-        AuthorServiceValidation.validateExistingAuthor(id, existingAuthor);
-
+        validateExistingAuthorData(id, authorDto);
         updateExistingAuthor(existingAuthor, authorDto);
-
         AuthorModel updatedAuthor = authorRepository.save(existingAuthor);
         return converter.convertToDTO(updatedAuthor);
     }
 
     @Transactional
-    public void createAuthor(AuthorRequest newAuthorDto) {
-        AuthorServiceValidation.validateNewAuthor(newAuthorDto, authorRepository);
-
+    public void createAuthor(@Validated AuthorRequest newAuthorDto) { // Adicione @Valid aqui
+        validateNewAuthorData(newAuthorDto);
         AuthorModel newAuthorModel = converter.convert(newAuthorDto);
         assert newAuthorModel != null;
         authorRepository.save(newAuthorModel);
+    }
+
+    private void validateNewAuthorData(AuthorRequest newAuthorDto) {
+        Optional<AuthorModel> findCpf = authorRepository.existsByCpf(newAuthorDto.getCpf());
+        Optional<AuthorModel> findEmail = authorRepository.existsByEmail(newAuthorDto.getEmail());
+        if (findEmail.isPresent()) {
+            throw new BusinessException(AuthorMessage.DUPLICATE_EMAIL, AuthorMessage.EMAIL_ALREADY_REGISTERED);
+        }
+        if (findCpf.isPresent()) {
+            throw new BusinessException(AuthorMessage.DUPLICATE_CPF, AuthorMessage.CPF_ALREADY_REGISTERED);
+        }
+    }
+
+    private void validateExistingAuthorData(Long id, AuthorDto authorDto) {
+        Optional<AuthorModel> findCpf = authorRepository.existsByCpf(authorDto.getCpf());
+        Optional<AuthorModel> findEmail = authorRepository.existsByEmail(authorDto.getEmail());
+        findEmail.ifPresent(authorModel -> {
+            if (!authorModel.getId().equals(id)) {
+                throw new BusinessException(AuthorMessage.DUPLICATE_EMAIL, AuthorMessage.EMAIL_ALREADY_REGISTERED);
+            }
+        });
+
+        findCpf.ifPresent(authorModel -> {
+            if (!authorModel.getId().equals(id)) {
+                throw new BusinessException(AuthorMessage.DUPLICATE_CPF, AuthorMessage.CPF_ALREADY_REGISTERED);
+            }
+        });
     }
 
     private void updateExistingAuthor(AuthorModel existingAuthor, AuthorDto authorDto) {
@@ -80,13 +104,11 @@ public class AuthorService {
     public ListWorkAuthorDto getAuthorWorks(Long authorId) {
         AuthorModel author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new AuthorException(String.format(AuthorMessage.AUTHOR_NOT_FOUND, authorId)));
-
         List<AuthorWorkModel> authorWorks = authorWorkRepository.findAuthorAndWorksById(authorId);
-
         List<WorkDto> workDtos = authorWorks.stream()
                 .map(authorWorkModel -> WorkConverter.toDto(authorWorkModel.getWork()))
                 .collect(Collectors.toList());
-
         return new ListWorkAuthorDto(author.getId(), author.getName(), workDtos);
     }
 }
+

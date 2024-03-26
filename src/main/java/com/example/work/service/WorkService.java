@@ -8,13 +8,12 @@ import com.example.work.exception.WorkException;
 import com.example.work.message.WorkMessage;
 import com.example.work.model.WorkModel;
 import com.example.work.repository.WorkRepository;
-import com.example.work.validations.WorkServiceValidation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,9 +41,8 @@ public class WorkService {
     }
 
     @Transactional
-    public WorkDto createWork(WorkRequest workRequest) {
+    public WorkDto createWork(@Validated WorkRequest workRequest) {
         try {
-            WorkServiceValidation.validateWorkRequest(workRequest);
             WorkModel newWork = workPostConverter.convert(workRequest);
             assert newWork != null;
             WorkModel savedWork = workRepository.save(newWork);
@@ -56,9 +54,8 @@ public class WorkService {
         }
     }
 
-    public WorkDto updateWork(Long id, WorkRequest workRequest) {
+    public WorkDto updateWork(Long id, @Validated WorkRequest workRequest) {
         try {
-            WorkServiceValidation.validateWorkRequest(workRequest);
             return workRepository.findById(id)
                     .map(existingWork -> {
                         updateEntityFromRequest(existingWork, workRequest);
@@ -93,3 +90,4 @@ public class WorkService {
         existingWork.setExhibitionDate(workRequest.getExhibitionDate());
     }
 }
+
