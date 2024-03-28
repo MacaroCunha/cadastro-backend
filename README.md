@@ -59,11 +59,6 @@ Se você possui conhecimento um pouco mais avançado, pode implementar as tarefa
 * **Extra 5 (deploy/hospedagem):** tornar a aplicação disponível em algum ambiente de nuvem, como o Heroku:
   * Não deverá ser necessária nenhuma configuração por parte do usuário para usar a aplicação, bastando apenas acessar a URL onde o sistema está hospedado.
   * O sistema deve estar funcional ao ser acessado.
-### Instruções
-- Faça o fork do desafio;
-- Crie um repositório privado no Gitlab para o projeto e adicione como colaborador o usuário **selecao.stefanini.cpg**;
-- Desenvolva. Você terá 4 (quatro) dias a partir da data do envio do desafio; 
-- Após concluir seu trabalho faça um push para o repositório que você criou; 
-- Envie um e-mail a equipe de seleção da Stefanini Campina Grande (selecao.cpg@stefanini.com) notificando a finalização do desafio para validação.
+
 
 Bom desenvolvimento!
