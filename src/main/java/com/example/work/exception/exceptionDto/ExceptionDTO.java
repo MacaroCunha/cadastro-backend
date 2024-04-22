@@ -6,6 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class ExceptionDTO {
-    private final String field;
-    private final String error_description;
+    private final String erro;
 }

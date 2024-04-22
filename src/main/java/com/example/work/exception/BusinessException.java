@@ -7,8 +7,7 @@ import lombok.Setter;
 public class BusinessException extends RuntimeException {
 
     private String codigo;
-    public BusinessException(String codigo, String message) {
+    public BusinessException(String message) {
         super(message);
-        this.codigo = codigo;
     }
 }
